@@ -173,18 +173,19 @@ inst_sort:                       							   # inst_sort begins here
 	movl	$1, -8(%rbp)									   #  assign 1 to j (memory address rbp-8)
 	jmp	.L10												   # jump to and execute section L10
 	
-.L14:
-	movl	-8(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	movl	%eax, -4(%rbp)
-	movl	-8(%rbp), %eax
-	subl	$1, %eax
-	movl	%eax, -12(%rbp)
-	jmp	.L11
+.L14:														   # code segment L14
+	movl	-8(%rbp), %eax									   # 'eax' gets the value of 'j'
+	cltq													   # convert 'eax' into int64
+	leaq	0(,%rax,4), %rdx								   # store the index 'j' in bytes in 'rdx' (4*j)
+	movq	-24(%rbp), %rax									   # 'rax' gets the reference of array 'num'.				
+	addq	%rdx, %rax										   # move the reference by 'rdx' bytes ( go to num[j] )
+	movl	(%rax), %eax								       # 'eax' gets the value of num[j]
+	movl	%eax, -4(%rbp)									   # the value of 'eax' (i.e. num[j]) is assigned into 'k'.
+	movl	-8(%rbp), %eax									   # 'eax' gets the value of 'j'
+	subl	$1, %eax										   # subtract the value of 'eax' by 1 (you get 'j-1')
+	movl	%eax, -12(%rbp)									   # 'i' (at address rbp-12) gets the value of 'eax' (equal to j-1)
+	jmp	.L11												   # jump to segment L11
+	
 .L13:
 	movl	-12(%rbp), %eax
 	cltq
@@ -221,14 +222,18 @@ inst_sort:                       							   # inst_sort begins here
 	movl	-4(%rbp), %eax
 	movl	%eax, (%rdx)
 	addl	$1, -8(%rbp)
-.L10:
-	movl	-8(%rbp), %eax
-	cmpl	-28(%rbp), %eax
-	jl	.L14
-	popq	%rbp
+	
+.L10:														   # section L10 	
+	movl	-8(%rbp), %eax									   # 'eax' gets the value of 'j'
+	cmpl	-28(%rbp), %eax									   # we compare 'j' with 'n'
+	jl	.L14												   # if j<n, compute section L14
+	popq	%rbp											   # pop the stack base pointer from the stack
 	.cfi_def_cfa 7, 8
-	ret
-	.cfi_endproc
+	ret														   # return back to call
+	.cfi_endproc											   # end the function
+	
+	
+	
 .LFE1:
 	.size	inst_sort, .-inst_sort
 	.globl	bsearch
