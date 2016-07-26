@@ -24,6 +24,7 @@ int main()
 		n++;
 		printf("\n%d inserted in position: %d\n", item, loc + 1);
 	}
+	
 	printf("The list of %d elements:\n", n);
 	for(i = 0; i < n; i++) 
 		printf("%6d", a[i]);

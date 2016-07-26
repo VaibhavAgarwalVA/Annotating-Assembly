@@ -121,14 +121,15 @@ main:														   # main begins here
 	movl	$0, %eax										   # clear the 'eax' to store return to zero
 	call	printf											   # printf gets executed
 	
-.L5:
-	movl	-416(%rbp), %eax
-	movl	%eax, %esi
-	movl	$.LC6, %edi
-	movl	$0, %eax
-	call	printf
-	movl	$0, -408(%rbp)
-	jmp	.L6
+.L5:														   # L5 block. Printing the array.
+	movl	-416(%rbp), %eax								   # 'eax' gets the value 'n'
+	movl	%eax, %esi										   # second parameter gets the value of 'n'
+	movl	$.LC6, %edi										   # edi -> LC6 string for printf
+	movl	$0, %eax										   # clear the 'eax' to store return to zero
+	call	printf											   # execute printf
+	movl	$0, -408(%rbp)									   # make i = 0
+	jmp	.L6													   # jump to segment L6, 'for' loop.	
+	
 .L7:
 	movl	-408(%rbp), %eax
 	cltq
