@@ -1,3 +1,5 @@
+	# Vaibhav Agarwal (14CS10050) Annotating Assembly - Compilers Lab, Assignment 1 .... Submitted on 26th July 2016
+	
 	.file	"ass1_14CS10050.c"                                 # file name
 	.section	.rodata										   # read only data section
 	.align 8												   # align with 8 byte boundary
@@ -377,8 +379,8 @@ insert:														   # insert begins here
 	.cfi_def_cfa 7, 8		
 	ret														   # return 
 	.cfi_endproc											   # end procedure
-	
 .LFE3:
 	.size	insert, .-insert
-	.ident	"GCC: (Ubuntu 4.8.4-2ubuntu1~14.04.1) 4.8.4"
+	
+	.ident	"GCC: (Ubuntu 4.8.4-2ubuntu1~14.04.1) 4.8.4"       # specifications
 	.section	.note.GNU-stack,"",@progbits
