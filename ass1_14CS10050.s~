@@ -31,7 +31,7 @@ main:														   # main begins here
 	pushq	%rbp											   # save old base pointer
 	.cfi_def_cfa_offset 16									   # adding a new absolute offset
 	.cfi_offset 6, -16										   # Previous value of register is saved at offset -16 from CFA.
-	movq	%rsp, %rbp										   # changes the base pointer. adjust the stack top pointer.
+	movq	%rsp, %rbp										   # changes the base pointer to the stack top pointer.
 	.cfi_def_cfa_register 6                            		   # modifies the rule for computing cfa.
 	
 	subq	$416, %rsp 										   # allocate memory for all data members. readjust the top pointer. (4*100 + 4*4 = 416)                                           
@@ -165,13 +165,14 @@ inst_sort:                       							   # inst_sort begins here
 	.cfi_startproc											   # Call frame information, procedure starts
 	pushq	%rbp											   # Push old base pointer to stack.
 	.cfi_def_cfa_offset 16									   # adding a new absolute offset
-	.cfi_offset 6, -16										   # 
-	movq	%rsp, %rbp
-	.cfi_def_cfa_register 6
-	movq	%rdi, -24(%rbp)
-	movl	%esi, -28(%rbp)
-	movl	$1, -8(%rbp)
-	jmp	.L10
+	.cfi_offset 6, -16										   # Previous value of register is saved at offset -16 from CFA.
+	movq	%rsp, %rbp										   # assign base pointer to the value of stack pointer.
+	.cfi_def_cfa_register 6									   # modifies the rule for computing cfa.
+	movq	%rdi, -24(%rbp)									   # (rbp-24) memory address is being assigned with array pointer (first param)
+	movl	%esi, -28(%rbp)									   # (rbp-28) memory address is being assigned with n (second param)
+	movl	$1, -8(%rbp)									   #  assign 1 to j (memory address rbp-8)
+	jmp	.L10												   # jump to and execute section L10
+	
 .L14:
 	movl	-8(%rbp), %eax
 	cltq
