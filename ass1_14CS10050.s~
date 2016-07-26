@@ -236,75 +236,84 @@ inst_sort:                       							   # inst_sort begins here
 	
 	
 	
-.LFE1:
+.LFE1:														   
 	.size	inst_sort, .-inst_sort
-	.globl	bsearch
-	.type	bsearch, @function
-bsearch:
+	.globl	bsearch											   # global function 'bsearch'
+	.type	bsearch, @function								   # function 'bsearch'
+bsearch:													   # function begins
 .LFB2:
-	.cfi_startproc
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset 6, -16
-	movq	%rsp, %rbp
-	.cfi_def_cfa_register 6
-	movq	%rdi, -24(%rbp)
-	movl	%esi, -28(%rbp)
-	movl	%edx, -32(%rbp)
-	movl	$1, -8(%rbp)
-	movl	-28(%rbp), %eax
-	movl	%eax, -12(%rbp)
-.L19:
-	movl	-12(%rbp), %eax
-	movl	-8(%rbp), %edx
-	addl	%edx, %eax
-	movl	%eax, %edx
-	shrl	$31, %edx
-	addl	%edx, %eax
-	sarl	%eax
-	movl	%eax, -4(%rbp)
-	movl	-4(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	cmpl	-32(%rbp), %eax
-	jle	.L16
-	movl	-4(%rbp), %eax
-	subl	$1, %eax
-	movl	%eax, -12(%rbp)
-	jmp	.L17
-.L16:
-	movl	-4(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	cmpl	-32(%rbp), %eax
-	jge	.L17
-	movl	-4(%rbp), %eax
-	addl	$1, %eax
-	movl	%eax, -8(%rbp)
-.L17:
-	movl	-4(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	cmpl	-32(%rbp), %eax
-	je	.L18
-	movl	-8(%rbp), %eax
-	cmpl	-12(%rbp), %eax
-	jle	.L19
-.L18:
-	movl	-4(%rbp), %eax
-	popq	%rbp
+	.cfi_startproc											   # start procedure
+	pushq	%rbp											   # push the stack base pointer in stack
+	.cfi_def_cfa_offset 16									   # set a absolute offset
+	.cfi_offset 6, -16										   # Previous value of register is saved at offset -16 from CFA.
+	movq	%rsp, %rbp 										   # rearrange the base pointer to the stack pointer
+	.cfi_def_cfa_register 6									   # modifies the rule for computing cfa.
+	movq	%rdi, -24(%rbp)									   # first parameter stored in rbp-24 'a'
+	movl	%esi, -28(%rbp)									   # second parameter stored in rbp-28 'n'
+	movl	%edx, -32(%rbp)                                    # third parameter stored in rbp-32 'item'
+	movl	$1, -8(%rbp)									   # 'bottom' is assigned 1.
+	movl	-28(%rbp), %eax									   # 'eax' gets the value 'n'
+	movl	%eax, -12(%rbp)									   # 'top' gets the value of 'eax' (top=n)
+	
+.L19: 														   # code segment L19
+	movl	-12(%rbp), %eax									   # 'eax' gets the value of 'top'
+	movl	-8(%rbp), %edx									   # 'edx' gets the value of 'bottom'
+	addl	%edx, %eax										   # add top and bottom
+	movl	%eax, %edx										   # 'edx' gets the value of 'eax'
+	shrl	$31, %edx										   # right shift 'edx' by 2^31 (to get the msb of the sum)
+	addl	%edx, %eax										   # add edx ( which has "top + bottom" ) and the overflow from division. (2s complement if the number is negative)
+	sarl	%eax											   # divide it by 2.
+	movl	%eax, -4(%rbp)									   # assign the result in 'mid'
+	movl	-4(%rbp), %eax									   # 'eax' gets the value of 'mid'
+	cltq      												   # convert into int64
+	leaq	0(,%rax,4), %rdx							       # multiply 'mid' by 4 to convert into bytes
+	movq	-24(%rbp), %rax									   # 'rax' stores the reference to the array
+	addq	%rdx, %rax										   # move the pointer by 'rdx' number of bytes.
+	movl	(%rax), %eax									   # 'eax' gets the value (type cast)	
+	cmpl	-32(%rbp), %eax									   # compare a[mid] with item
+	jle	.L16												   # if a[mid] <= item, goto segment L16
+	movl	-4(%rbp), %eax									   # 'eax' gets the value 'mid'
+	subl	$1, %eax										   # subtract 'mid' by 1
+	movl	%eax, -12(%rbp)									   # 'top' gets the value of 'eax' (mid-1)
+	jmp	.L17												   # jump to section L17
+	
+.L16:														   # code segment L16 
+	movl	-4(%rbp), %eax									   # 'eax' gets the value 'mid'
+	cltq                      								   # convert to int64
+	leaq	0(,%rax,4), %rdx								   # convert into bytes by multiplying by 4.
+	movq	-24(%rbp), %rax									   # 'rax' gets the value of array pointer
+	addq	%rdx, %rax										   # move the pointer by 'rdx' bytes 
+	movl	(%rax), %eax									   # 'eax' gets the value of a[mid]
+	cmpl	-32(%rbp), %eax									   # compare a[mid] with item
+	jge	.L17												   # if a[mid] >= item, goto L17
+	movl	-4(%rbp), %eax									   # 'eax' gets the value of 'mid'
+	addl	$1, %eax										   # add 1 to 'eax'	
+	movl	%eax, -8(%rbp)									   # bottom gets the value of 'eax' (mid+1)
+	
+.L17:														   # code segment L17
+	movl	-4(%rbp), %eax									   # 'eax' gets the value of 'mid'
+	cltq													   # converts to int64
+	leaq	0(,%rax,4), %rdx								   # convert 'rax' into bytes and store in 'rdx'
+	movq	-24(%rbp), %rax									   # 'rax' gets the reference to array 'a'
+	addq	%rdx, %rax										   # shifts the pointer to 'rdx' bytes from array start
+	movl	(%rax), %eax									   # 'eax' gets the value of 'rax'
+	cmpl	-32(%rbp), %eax									   # compare a[mid] with item
+	je	.L18												   # if equal (a[mid] == item), goto L18
+	movl	-8(%rbp), %eax									   # 'eax' gets the value of 'bottom'
+	cmpl	-12(%rbp), %eax								       # compare 'eax' with top (bottom and top)
+	jle	.L19												   # if bottom <= top, goto L19
+	
+.L18:														   # code segment L18
+	movl	-4(%rbp), %eax									   # 'eax' gets 'mid'
+	popq	%rbp											   # pops the base pointer 'rbp'
 	.cfi_def_cfa 7, 8
-	ret
-	.cfi_endproc
+	ret														   # return 
+	.cfi_endproc										       # end procedure
+	
+	
+	
+	
+	
 .LFE2:
 	.size	bsearch, .-bsearch
 	.globl	insert
