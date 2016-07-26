@@ -103,23 +103,24 @@ main:														   # main begins here
 	jmp	.L5													   # skip the 'else' block and move to L5 block
 	
 .L4:														   # else block
-	movl	-412(%rbp), %edx								   # 
-	movl	-416(%rbp), %ecx
-	leaq	-400(%rbp), %rax
-	movl	%ecx, %esi
-	movq	%rax, %rdi
-	call	insert
-	movl	%eax, -404(%rbp)
-	movl	-416(%rbp), %eax
-	addl	$1, %eax
-	movl	%eax, -416(%rbp)
-	movl	-404(%rbp), %eax
-	leal	1(%rax), %edx
-	movl	-412(%rbp), %eax
-	movl	%eax, %esi
-	movl	$.LC5, %edi
-	movl	$0, %eax
-	call	printf
+	movl	-412(%rbp), %edx								   # third parameter is assigned 'item'
+	movl	-416(%rbp), %ecx								   # 'n' is added into 'ecx'
+	leaq	-400(%rbp), %rax								   # 'rax' now points to the starting index of array 'a'
+	movl	%ecx, %esi										   # second parameter is assigned 'n'
+	movq	%rax, %rdi										   # the array 'a' is to be assigned into first parameter
+	call	insert											   # calls 'insert' function
+	movl	%eax, -404(%rbp)								   # assigns the return value from insert into 'loc'
+	movl	-416(%rbp), %eax								   # 'eax' gets the value of 'n'
+	addl	$1, %eax										   # increment the value at 'eax' by 1.
+	movl	%eax, -416(%rbp)								   # storing the value at 'eax' back into 'n'. Effectively n++.
+	movl	-404(%rbp), %eax 								   # 'eax' gets the value 'loc'
+	leal	1(%rax), %edx									   # add 1 to the value of 'loc' and store the outcome in 'edx', first parameter
+	movl	-412(%rbp), %eax								   # 'eax' gets the value 'item'
+	movl	%eax, %esi										   # 'eax' is assigned in the second parameter
+	movl	$.LC5, %edi										   # edi -> LC5 string for printf
+	movl	$0, %eax										   # clear the 'eax' to store return to zero
+	call	printf											   # printf gets executed
+	
 .L5:
 	movl	-416(%rbp), %eax
 	movl	%eax, %esi
