@@ -156,17 +156,16 @@ main:														   # main begins here
 	
 	
 	
-	
-.LFE0:
-	.size	main, .-main
-	.globl	inst_sort
-	.type	inst_sort, @function
-inst_sort:
+.LFE0:														   
+	.size	main, .-main									   # main function calls this and value gets returned back to main 
+	.globl	inst_sort										   # global function inst_sort
+	.type	inst_sort, @function							   # function of name "inst_sort"
+inst_sort:                       							   # inst_sort begins here
 .LFB1:
-	.cfi_startproc
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset 6, -16
+	.cfi_startproc											   # Call frame information, procedure starts
+	pushq	%rbp											   # Push old base pointer to stack.
+	.cfi_def_cfa_offset 16									   # adding a new absolute offset
+	.cfi_offset 6, -16										   # 
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
 	movq	%rdi, -24(%rbp)

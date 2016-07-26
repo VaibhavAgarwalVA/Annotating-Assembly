@@ -3,6 +3,8 @@
 void inst_sort(int num[],int n);
 int bsearch(int num[],int n,int item);
 int insert(int num[],int n,int item);
+
+
 int main()
 {
 	int n, a[MAXSIZE], item, i, loc;
@@ -24,12 +26,15 @@ int main()
 		n++;
 		printf("\n%d inserted in position: %d\n", item, loc + 1);
 	}
+	
 	printf("The list of %d elements:\n", n);
 	for(i = 0; i < n; i++) 
 		printf("%6d", a[i]);
 	printf("\n");
 	return 0;
 }
+
+
 void inst_sort(int num[],int n)
 {
 	int i,j,k;
@@ -40,6 +45,8 @@ void inst_sort(int num[],int n)
 		num[i+1]=k;
 	}
 }
+
+
 int bsearch(int a[],int n,int item)
 {
 	int mid, top, bottom;
@@ -54,6 +61,8 @@ int bsearch(int a[],int n,int item)
 	} while (item != a[mid] && bottom <= top);
 	return mid;
 }
+
+
 int insert(int num[],int n,int k)
 {
 	int i;
