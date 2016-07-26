@@ -70,9 +70,10 @@ main:														   # main begins here
 	movl	%edx, %esi										   # 'esi' is the second parameter of insertion sort. (size)
 	movq	%rax, %rdi										   # 'rdi' is the first parameter of insertion sort. (array)
 	call	inst_sort										   # calls insertion sort function "inst_sort"
-	movl	$.LC3, %edi
-	call	puts
-	leaq	-412(%rbp), %rax
+	
+	movl	$.LC3, %edi										   # edi -> string LC3 for printf
+	call	puts											   # calls the puts for printing the string
+	leaq	-412(%rbp), %rax								   # assign 'rax' to the 	
 	movq	%rax, %rsi
 	movl	$.LC1, %edi
 	movl	$0, %eax
