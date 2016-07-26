@@ -73,34 +73,37 @@ main:														   # main begins here
 	
 	movl	$.LC3, %edi										   # edi -> string LC3 for printf
 	call	puts											   # calls the puts for printing the string
-	leaq	-412(%rbp), %rax								   # assign 'rax' to the 	
-	movq	%rax, %rsi
-	movl	$.LC1, %edi
-	movl	$0, %eax
-	call	__isoc99_scanf
-	movl	-412(%rbp), %edx
-	movl	-416(%rbp), %ecx
-	leaq	-400(%rbp), %rax
-	movl	%ecx, %esi
-	movq	%rax, %rdi
-	call	bsearch
-	movl	%eax, -404(%rbp)
-	movl	-404(%rbp), %eax
-	cltq
-	movl	-400(%rbp,%rax,4), %edx
-	movl	-412(%rbp), %eax
-	cmpl	%eax, %edx
-	jne	.L4
-	movl	-404(%rbp), %eax
-	leal	1(%rax), %edx
-	movl	-412(%rbp), %eax
-	movl	%eax, %esi
-	movl	$.LC4, %edi
-	movl	$0, %eax
-	call	printf
-	jmp	.L5
-.L4:
-	movl	-412(%rbp), %edx
+	leaq	-412(%rbp), %rax								   # assign 'rax' to the memory where 'item' will be stored	
+	movq	%rax, %rsi										   # 'rax' is now 'rsi'
+	movl	$.LC1, %edi										   # edi -> string LC1 for scanf
+	movl	$0, %eax										   # assign zero as the initial value of 'eax'			
+	call	__isoc99_scanf									   # input the value 'item' using scanf
+	movl	-412(%rbp), %edx								   # third parameter for function call to be 'item'
+	movl	-416(%rbp), %ecx								   # 'n' is now added into 'ecx'
+	leaq	-400(%rbp), %rax								   # 'rax' now points to the starting index of array 'a'
+	movl	%ecx, %esi										   # second parameter of function call to be 'n'
+	movq	%rax, %rdi										   # first parameter of function call to be the array 'a'
+	call	bsearch											   # call the function 'bsearch' for binary earching item from the array.
+	
+	movl	%eax, -404(%rbp)								   # assign the return value of 'bsearch' into memory location 404 variable 'loc'
+	movl	-404(%rbp), %eax								   # eax gets the value of 'loc'
+	cltq													   # type casts the value to int64
+	movl	-400(%rbp,%rax,4), %edx							   # gets the value a[loc]
+	movl	-412(%rbp), %eax								   # gets the value item
+	cmpl	%eax, %edx										   # compares the values inside if
+	jne	.L4													   # if not equal, call the else block
+															   # 'if' block :								
+	movl	-404(%rbp), %eax 								   # 'eax' gets the value 'loc'
+	leal	1(%rax), %edx									   # add 1 to the value of 'loc' and store the outcome in 'edx', first parameter
+	movl	-412(%rbp), %eax								   # 'eax' gets the value 'item'
+	movl	%eax, %esi										   # 'eax' is assigned in the second parameter
+	movl	$.LC4, %edi										   # edi -> LC4 string for printf
+	movl	$0, %eax										   # clear the 'eax' to store return to zero
+	call	printf											   # printf gets executed
+	jmp	.L5													   # skip the 'else' block and move to L5 block
+	
+.L4:														   # else block
+	movl	-412(%rbp), %edx								   # 
 	movl	-416(%rbp), %ecx
 	leaq	-400(%rbp), %rax
 	movl	%ecx, %esi
