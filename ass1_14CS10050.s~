@@ -186,42 +186,44 @@ inst_sort:                       							   # inst_sort begins here
 	movl	%eax, -12(%rbp)									   # 'i' (at address rbp-12) gets the value of 'eax' (equal to j-1)
 	jmp	.L11												   # jump to segment L11
 	
-.L13:
-	movl	-12(%rbp), %eax
-	cltq
-	addq	$1, %rax
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rax, %rdx
-	movl	-12(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rcx
-	movq	-24(%rbp), %rax
-	addq	%rcx, %rax
-	movl	(%rax), %eax
-	movl	%eax, (%rdx)
-	subl	$1, -12(%rbp)
-.L11:
-	cmpl	$0, -12(%rbp)
-	js	.L12
-	movl	-12(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	cmpl	-4(%rbp), %eax
-	jg	.L13
-.L12:
-	movl	-12(%rbp), %eax
-	cltq
-	addq	$1, %rax
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rax, %rdx
-	movl	-4(%rbp), %eax
-	movl	%eax, (%rdx)
-	addl	$1, -8(%rbp)
+.L13:														   # segment L12
+	movl	-12(%rbp), %eax									   # 'eax' gets the value of 'i'
+	cltq													   # convert it into int64
+	addq	$1, %rax										   # increase 'rax' by 1
+	leaq	0(,%rax,4), %rdx								   # multiply by 4 to get the byte size
+	movq	-24(%rbp), %rax									   # 'rax' gets the reference of array 'num'
+	addq	%rax, %rdx										   # move the reference by byte size
+	movl	-12(%rbp), %eax									   # 'eax' gets the value of 'i'
+	cltq													   # convert it into int64
+	leaq	0(,%rax,4), %rcx								   # convert into byte size by multiplying by 4
+	movq	-24(%rbp), %rax									   # 'rax' gets the reference of the array
+	addq	%rcx, %rax										   # move the reference by byte size (go to num[i])
+	movl	(%rax), %eax									   # 'eax' gets the value of num[i]
+	movl	%eax, (%rdx)									   # assign num[i+1] to be num[i]
+	subl	$1, -12(%rbp)									   # decrement 'i'
+	
+.L11:														   # segment L11												
+	cmpl	$0, -12(%rbp)									   # compare 'i' with 0
+	js	.L12												   # if 0>i, jump to L12
+	movl	-12(%rbp), %eax									   # assign 'eax' to 'i'
+	cltq													   # convert 'eax' into int64
+	leaq	0(,%rax,4), %rdx								   # multiply by 4 to convert into byte size (store in 'rdx')
+	movq	-24(%rbp), %rax									   # 'rax' gets the reference of the array 'num'
+	addq	%rdx, %rax										   # move the reference to 'num' by 'rdx' no of bytes (to num[i])
+	movl	(%rax), %eax									   # convert 64 byte back into 32 bytes
+	cmpl	-4(%rbp), %eax									   # compare num[i] with 'k'
+	jg	.L13												   # if greater (num[i]>k), jump to segment L13 
+
+.L12:														   # code segment L12
+	movl	-12(%rbp), %eax									   # 'eax' gets the value of 'i'
+	cltq													   # convert into int64
+	addq	$1, %rax										   # increment 'i' by 1
+	leaq	0(,%rax,4), %rdx								   # 'rdx' stores the size in bytes by multiplying by 4.
+	movq	-24(%rbp), %rax									   # 'rax' gets the reference of array 'num'
+	addq	%rax, %rdx										   # move the array pointer by 'rdx' bytes (to arr[i+1])
+	movl	-4(%rbp), %eax									   # 'eax' gets the value of 'k' 
+	movl	%eax, (%rdx)									   # assign num[i+1] to be 'k'
+	addl	$1, -8(%rbp)									   # increment 'j' in for loop
 	
 .L10:														   # section L10 	
 	movl	-8(%rbp), %eax									   # 'eax' gets the value of 'j'
