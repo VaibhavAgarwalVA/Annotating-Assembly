@@ -24,6 +24,8 @@
 	.type	main, @function									   # Function prototype of "main". main begins here.
 main:														   # main begins here
 
+
+
 .LFB0:
 	.cfi_startproc											   # "Call Frame Information". Used to manage call frames.
 	pushq	%rbp											   # save old base pointer
@@ -130,26 +132,31 @@ main:														   # main begins here
 	movl	$0, -408(%rbp)									   # make i = 0
 	jmp	.L6													   # jump to segment L6, 'for' loop.	
 	
-.L7:
-	movl	-408(%rbp), %eax
-	cltq
-	movl	-400(%rbp,%rax,4), %eax
-	movl	%eax, %esi
-	movl	$.LC7, %edi
-	movl	$0, %eax
-	call	printf
-	addl	$1, -408(%rbp)
-.L6:
-	movl	-416(%rbp), %eax
-	cmpl	%eax, -408(%rbp)
-	jl	.L7
-	movl	$10, %edi
-	call	putchar
-	movl	$0, %eax
-	leave
-	.cfi_def_cfa 7, 8
-	ret
-	.cfi_endproc
+.L7:														   # L7 block
+	movl	-408(%rbp), %eax                  				   # 'eax' gets the value 'i'
+	cltq													   # converts into int64
+	movl	-400(%rbp,%rax,4), %eax							   # access the 'i'th element of the array 
+	movl	%eax, %esi										   # assign a[i] to the second parameter
+	movl	$.LC7, %edi										   # edi -> string LC7 for printf
+	movl	$0, %eax										   # clear 'eax' and assign to zero
+	call	printf											   # execute printf 
+	addl	$1, -408(%rbp)									   # increment the value of 'i'
+	
+.L6:														   # L6 block
+	movl	-416(%rbp), %eax								   # 'eax' gets the value of 'n'
+	cmpl	%eax, -408(%rbp)								   # compare 'n' and 'i'
+	jl	.L7													   # if 'n' is less than 'i', execute L7 block
+	movl	$10, %edi										   # edi -> "\n" for printf
+	call	putchar											   # executes putchar to print new line
+	movl	$0, %eax										   # clear 'eax' and assign it zero
+	leave													   # end of process
+	.cfi_def_cfa 7, 8										   	
+	ret														   # return zero
+	.cfi_endproc											   # end of 'main' function
+	
+	
+	
+	
 .LFE0:
 	.size	main, .-main
 	.globl	inst_sort
