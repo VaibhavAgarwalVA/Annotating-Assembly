@@ -71,3 +71,4 @@ int insert(int num[],int n,int k)
 	num[i+1]=k;
 	return (i+1);
 }
+

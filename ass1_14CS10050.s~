@@ -314,66 +314,70 @@ bsearch:													   # function begins
 	
 	
 	
-.LFE2:
+.LFE2:														   
 	.size	bsearch, .-bsearch
-	.globl	insert
-	.type	insert, @function
-insert:
-.LFB3:
-	.cfi_startproc
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset 6, -16
-	movq	%rsp, %rbp
-	.cfi_def_cfa_register 6
-	movq	%rdi, -24(%rbp)
-	movl	%esi, -28(%rbp)
-	movl	%edx, -32(%rbp)
-	movl	-28(%rbp), %eax
-	subl	$1, %eax
-	movl	%eax, -4(%rbp)
-	jmp	.L22
-.L24:
-	movl	-4(%rbp), %eax
-	cltq
-	addq	$1, %rax
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rax, %rdx
-	movl	-4(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rcx
-	movq	-24(%rbp), %rax
-	addq	%rcx, %rax
-	movl	(%rax), %eax
-	movl	%eax, (%rdx)
-	subl	$1, -4(%rbp)
-.L22:
-	cmpl	$0, -4(%rbp)
-	js	.L23
-	movl	-4(%rbp), %eax
-	cltq
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rdx, %rax
-	movl	(%rax), %eax
-	cmpl	-32(%rbp), %eax
-	jg	.L24
-.L23:
-	movl	-4(%rbp), %eax
-	cltq
-	addq	$1, %rax
-	leaq	0(,%rax,4), %rdx
-	movq	-24(%rbp), %rax
-	addq	%rax, %rdx
-	movl	-32(%rbp), %eax
-	movl	%eax, (%rdx)
-	movl	-4(%rbp), %eax
-	addl	$1, %eax
-	popq	%rbp
-	.cfi_def_cfa 7, 8
-	ret
-	.cfi_endproc
+	.globl	insert											   # global scope of 'insert'
+	.type	insert, @function								   # function by the name 'insert'
+insert:														   # insert begins here
+.LFB3:	
+	.cfi_startproc											   # start procedure
+	pushq	%rbp											   # push the stack base pointer in stack
+	.cfi_def_cfa_offset 16									   # set a absolute offset
+	.cfi_offset 6, -16										   # Previous value of register is saved at offset -16 from CFA.
+	movq	%rsp, %rbp										   # base pointer moves to stack pointer
+	.cfi_def_cfa_register 6									   # modifies the rule for computing cfa.
+	movq	%rdi, -24(%rbp)									   # first parameter (array 'a')
+	movl	%esi, -28(%rbp)									   # second parameter ('n')
+	movl	%edx, -32(%rbp)									   # third paramter ('item')
+	movl	-28(%rbp), %eax									   # 'eax' gets the value of 'n'
+	subl	$1, %eax										   # subtract 'eax' by 1
+	movl	%eax, -4(%rbp)									   # 'i' gets assigned the value of 'n-1'
+	jmp	.L22												   # unconditional jump to L22
+	
+.L24:														   # code segment L24
+	movl	-4(%rbp), %eax									   # 'eax' gets the value of 'i'
+	cltq													   # convert into int64
+	addq	$1, %rax										   # 'rax' gets incremented by 1 (i -> i+1)
+	leaq	0(,%rax,4), %rdx								   # convert into size in bytes (multiply by 4)
+	movq	-24(%rbp), %rax									   # 'rax' gets the reference to array 'a'
+	addq	%rax, %rdx										   # move the pointer by 'rdx' bytes
+	movl	-4(%rbp), %eax									   # 'eax' gets the value of 'i'
+	cltq													   # convert into int64
+	leaq	0(,%rax,4), %rcx								   # convert into size in bytes (multiply by 4)
+	movq	-24(%rbp), %rax									   # 'rax' gets the reference to array 'a'
+	addq	%rcx, %rax										   # move the pointer by 'rdx' bytes
+	movl	(%rax), %eax									   # 'eax' gets the value of 'rax' (64 to 32 bit)
+	movl	%eax, (%rdx)									   # 'rdx' gets the value of 'eax' (num[i+1]=num[i])
+	subl	$1, -4(%rbp)									   # subtract i by 1.
+	
+.L22:														   # code segment L22
+	cmpl	$0, -4(%rbp)									   # compare i with 0
+	js	.L23												   # if i is smaller than 0, jump to L23
+	movl	-4(%rbp), %eax								       # 'eax' gets the value of 'i'
+	cltq													   # convert into int64
+	leaq	0(,%rax,4), %rdx								   # convert into bytes by multiplying by 4.
+	movq	-24(%rbp), %rax									   # 'rax' gets the pointer to array 'a'
+	addq	%rdx, %rax										   # shift the array pointer by 'rdx' bytes
+	movl	(%rax), %eax									   # 'eax' gets the value of 'rax'
+	cmpl	-32(%rbp), %eax									   # compares k and num[i]
+	jg	.L24												   # if num[i] > k, goto L24
+	
+.L23:														   # code segment L23
+	movl	-4(%rbp), %eax									   # 'eax' gets the value of 'i'
+	cltq													   # convert into int64
+	addq	$1, %rax										   # add 1 to 'rax'
+	leaq	0(,%rax,4), %rdx								   # convert into size, in bytes, by multiplying by 4.
+	movq	-24(%rbp), %rax									   # 'rax' gets the pointer to array 'a'
+	addq	%rax, %rdx										   # move the pointer by 'rdx' bytes [4*(i+1)]
+	movl	-32(%rbp), %eax									   # 'eax' now stores 'k'
+	movl	%eax, (%rdx)									   # the value of 'k' gets assigned to a[i+1]
+	movl	-4(%rbp), %eax									   # 'eax' now has 'i'
+	addl	$1, %eax										   # increment i
+	popq	%rbp											   # pop the stack base pointer
+	.cfi_def_cfa 7, 8		
+	ret														   # return 
+	.cfi_endproc											   # end procedure
+	
 .LFE3:
 	.size	insert, .-insert
 	.ident	"GCC: (Ubuntu 4.8.4-2ubuntu1~14.04.1) 4.8.4"
